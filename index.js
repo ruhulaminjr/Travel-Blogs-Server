@@ -29,13 +29,20 @@ async function run() {
     app.put("/makeadmin", async (req, res) => {
       const email = req.body.email;
       const options = { upsert: true };
-      // create a document that sets the plot of the movie
-      const updateDoc = {
-        $set: {
-          role: "admin",
-        },
-      };
-      const update = await usersCollection.updateOne({ email }, updateDoc, options);
+      const user = await usersCollection.findOne({ email });
+      if (user) {
+        const updateDoc = {
+          $set: {
+            role: "admin",
+          },
+        };
+        const update = await usersCollection.updateOne(
+          { email },
+          updateDoc,
+          options
+        );
+        res.send(update);
+      }
     });
     app.get("/getadmin/:email", async (req, res) => {
       const userEmail = req.params.email;
