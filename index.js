@@ -26,6 +26,17 @@ async function run() {
       const savetodb = await usersCollection.insertOne(user);
       res.send(savetodb);
     });
+    app.put("/makeadmin", async (req, res) => {
+      const email = req.body.email;
+      const options = { upsert: true };
+      // create a document that sets the plot of the movie
+      const updateDoc = {
+        $set: {
+          role: "admin",
+        },
+      };
+      const update = await usersCollection.updateOne({ email }, updateDoc, options);
+    });
     app.get("/getadmin/:email", async (req, res) => {
       const userEmail = req.params.email;
       const user = await usersCollection.findOne({ email: userEmail });
@@ -52,6 +63,10 @@ async function run() {
       const id = ObjectId(req.params.id);
       const findBlog = await usersBlogs.findOne({ _id: id });
       res.send(findBlog);
+    });
+    app.get("/gethomeblogs", async (req, res) => {
+      const allcarts = await usersBlogs.find({ status: "approved" }).toArray();
+      res.send(allcarts);
     });
     app.get("/getblogs", async (req, res) => {
       const allcarts = await usersBlogs.find({}).toArray();
