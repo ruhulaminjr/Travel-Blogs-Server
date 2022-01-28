@@ -60,6 +60,24 @@ async function run() {
       const result = await usersBlogs.insertOne(data);
       res.send(result);
     });
+    app.put("/editblog/:id", async (req, res) => {
+      const updatedata = req.body;
+      const id = ObjectId(req.params.id);
+      const options = { upsert: false };
+      const updateDoc = {
+        $set: {
+          ...updatedata,
+        },
+      };
+      console.log(updateDoc);
+
+      const updateBlog = await usersBlogs.updateOne(
+        { _id: id },
+        updateDoc,
+        options
+      );
+      res.send(updateBlog);
+    });
 
     app.delete("/blogdelete/:id", async (req, res) => {
       const id = ObjectId(req.params.id);
