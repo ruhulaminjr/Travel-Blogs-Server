@@ -90,8 +90,23 @@ async function run() {
       res.send(findBlog);
     });
     app.get("/gethomeblogs", async (req, res) => {
-      const allcarts = await usersBlogs.find({ status: "approved" }).toArray();
-      res.send(allcarts);
+      const cursor = usersBlogs.find({ status: "approved" });
+      const blogsCount = await usersBlogs.find({ status: "approved" }).count();
+      const page = req.query.page;
+      let allblogs;
+      if (page) {
+        allblogs = await cursor
+          .skip(page * 10)
+          .limit(10)
+          .toArray();
+      } else {
+        allblogs = await cursor.toArray();
+      }
+
+      res.send({
+        allblogs,
+        blogsCount,
+      });
     });
     app.get("/getblogs", async (req, res) => {
       const allcarts = await usersBlogs.find({}).toArray();
